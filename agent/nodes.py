@@ -1,5 +1,6 @@
 from agent.state import ResearchState
 from agent.llm import llm
+from agent.tools import search_web, search_wikipedia
 
 
 def _extract_text(response) -> str:
@@ -36,3 +37,13 @@ ONLY the search query text, nothing else — no quotes, no explanation.
         "search_queries": [refined_query],
         "iterations": 0,
     }
+
+def search_web_node(state: ResearchState) -> dict:
+    query = state["search_queries"][-1]
+    results = search_web(query)
+    return {"sources": results}
+
+def search_wikipedia_node(state: ResearchState) -> dict:
+    query = state["search_queries"][-1]
+    results = search_wikipedia(query)
+    return {"sources": results}
