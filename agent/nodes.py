@@ -93,3 +93,26 @@ Evaluate whether these sources are sufficient to write a thorough, accurate answ
         update["search_queries"] = [result.refined_query]
 
     return update
+
+def summarize(state: ResearchState) -> dict:
+    sources_text = "\n\n".join(
+        f"Source {i+1} [{s['source_type']}] {s['title']} ({s['url']}):\n{s['content']}"
+        for i, s in enumerate(state["sources"])
+    )
+
+    prompt = f"""Original question: "{state['query']}"
+
+You have gathered the following sources:
+
+{sources_text}
+
+Write a clear, well-organized answer to the original question using
+these sources. Structure it with short paragraphs or bullet points
+where helpful. At the end, add a "Sources" section listing the titles
+and URLs you drew from. Do not fabricate information not present in
+the sources above."""
+
+    response = llm.invoke(prompt)
+    final_answer = _extract_text(response)
+
+    return {"final_answer": final_answer}
